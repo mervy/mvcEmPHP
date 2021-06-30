@@ -1,34 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
-    <style>
-        *{            
-            margin:0;
-            padding:0;
+    <link rel="stylesheet" href="/assets/css/custom.css">
+    <!-- <style>
+        * {
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
-            background: rgb(77, 124, 224);
+            background: rgb(145, 157, 182);
         }
+
         main {
             display: grid;
-            width: 90vw;
-            margin: 0 auto;            
+            width: 70vw;
+            margin: 0 auto;
         }
+
         h1 {
             padding: 10px 0 20px 0;
             color: white;
         }
-        p{
+
+        p {
             color: rgb(74, 214, 55);
         }
-    </style>
+    </style> -->
 </head>
+
 <body>
+    {{header}}
     <main>
         {{content}}
-    </main>    
+    </main>
+    {{footer}}
 </body>
+
 </html>

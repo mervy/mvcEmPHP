@@ -3,6 +3,7 @@
 namespace App\Controller\Pages;
 
 use \App\Utils\View;
+use \App\Model\Entity\Organization;
 
 class Home extends Layout
 {
@@ -12,11 +13,14 @@ class Home extends Layout
      */
     public static function getHome()
     {
-       $content = View::render('pages/home', [
-           'name' => 'Rogério Soares',
-           'desc' => 'Mais um projeto de MVC em PHP'
+        $obOrganization = new Organization;
 
-       ]);
-       return parent::getLayout('MVC em PHP', $content);
+
+        $content = View::render('pages/home', [
+            'name' => $obOrganization->name,
+            'site' => $obOrganization->site,
+            'desc' => $obOrganization->desc           
+        ]);
+        return parent::getLayout('MVC em PHP', $content);
     }
 }
