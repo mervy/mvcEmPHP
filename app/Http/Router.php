@@ -148,7 +148,7 @@ class Router
     {
         //URI
         $uri = $this->getUri();
-        print_r($uri);
+
         //Method
         $httpMethod = $this->request->getHttpMethod();
 
@@ -195,7 +195,7 @@ class Router
 
             //Retorna a execução da função
             return call_user_func_array($route['controller'],$args);
-            
+
         } catch (Exception $e) {
             return new Response($e->getCode(), $e->getMessage());
         }
