@@ -18,6 +18,12 @@ $obRouter = new Router(URL);
 //Rota Home
 $obRouter->get('/', [
     function(){
-        return new Response(200, Home::getHome());
+       return new Response(200, Home::getHome());
     }
 ]);
+
+//Imprime o Response da rota
+$obRouter->run()
+         ->sendResponse();
+
+//https://youtu.be/7fxguLAebl4?list=PL_zkXQGHYosGQwNkMMdhRZgm4GjspTnXs&t=3024
