@@ -4,6 +4,7 @@ namespace App\Http;
 
 use \Closure;
 use \Exception;
+use \ReflectionFunction;
 
 class Router
 {
@@ -53,9 +54,9 @@ class Router
     {
         //Informações da URL atual
         $parseUrl = parse_url($this->url);
-
+     
         //Define o prefixo
-        // $this->prefix = $parseUrl['path'] ?? '';
+        $this->prefix = $parseUrl['path'] ?? '';
     }
     /**
      * Método responsável por adicionar uma rota na classe
@@ -74,9 +75,19 @@ class Router
             }
         }
 
+        //Variáveis da rota
+        $params['variables'] = [];
+
+        //Padrão de validação das variáveis das rotas
+        $patternVariable = '/{(.*?)}/';
+        if(preg_match_all($patternVariable, $route, $matches)){
+            $route = preg_replace($patternVariable, '(.*?)', $route);
+            $params['variables'] = $matches[1];
+        }
+
         //Padrão de validação da URL
         $patternRoute = '/^' . str_replace('/', '\/', $route) . '$/';
-
+ 
         //Adiciona a rota dentro da classe
         $this->routes[$patternRoute][$method] = $params;
     }
@@ -128,15 +139,13 @@ class Router
      */
     private function getUri()
     {
-        $uri = $this->request->getUri();
-
-        return $uri;
-
+        $uri = $this->request->getUri();  
+       
         //Fatiar a URI com prefixo
-        //$xUri = strlen($this->prefix) ? explode($this->prefix, $uri) : [$uri];
-
+        $xUri = strlen($this->prefix) ? explode($this->prefix, $uri) : [$uri];
+           
         //Retorna a URI sem prefixo
-        // return end($xUri);
+        return end($xUri);
     }
 
 
@@ -148,19 +157,24 @@ class Router
     {
         //URI
         $uri = $this->getUri();
-
+      
         //Method
         $httpMethod = $this->request->getHttpMethod();
-
 
         //Valida as rotas
         foreach ($this->routes as $patternRoute => $methods) {
 
             //Verifica se a uri bate com o padrão
-            if (preg_match($patternRoute, $uri)) {
+            if (preg_match($patternRoute, $uri, $matches)) {
                 //Verifica o método
+                if (isset($methods[$httpMethod])) {
+                    //Removo a primeira posição
+                    unset($matches[0]);
 
-                if ($methods[$httpMethod]) {
+                    //Variáveis processadas
+                    $keys = $methods[$httpMethod]['variables'];
+                    $methods[$httpMethod]['variables'] = array_combine($keys, $matches);
+                    $methods[$httpMethod]['variables']['request'] = $this->request;
 
                     //Retorno dos parâmetros da rota
                     return $methods[$httpMethod];
@@ -184,7 +198,7 @@ class Router
         try {
             //Obtém a rota atual
             $route = $this->getRoute();
-
+         
             //Verifica o controlador
             if (!isset($route['controller'])) {
                 throw new Exception('A URL não pôde ser processada!', 500);
@@ -192,6 +206,14 @@ class Router
 
             //Argumentos da função
             $args = [];
+
+            //Reflection
+            $reflection = new ReflectionFunction($route['controller']);
+            foreach ($reflection->getParameters() as $parameter) {
+                $name = $parameter->getName();
+                $args[$name] = $route['variables'][$name] ?? '';
+                
+            }       
 
             //Retorna a execução da função
             return call_user_func_array($route['controller'],$args);

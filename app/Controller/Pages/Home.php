@@ -17,10 +17,8 @@ class Home extends Layout
 
 
         $content = View::render('pages/home', [
-            'name' => $obOrganization->name,
-            'site' => $obOrganization->site,
-            'desc' => $obOrganization->desc           
+            'name' => $obOrganization->name,            
         ]);
-        return parent::getLayout('MVC em PHP', $content);
+        return parent::getLayout('MVC em PHP - Home', $content);
     }
 }
